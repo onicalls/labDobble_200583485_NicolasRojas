@@ -10,6 +10,7 @@
                  )
 )
 
+(define elements (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "V" "W" "X" "Y" "Z"))
 ;;TDA cards
 ;;Descripción: TDA que contiene los elementos de las cartas
 ;;Dom: cartas (list) X jugador (str) 
@@ -18,39 +19,41 @@
 (define tdaCards (lambda (cards player)
           (list cards player)))
 
-;Ejemplo: (recortaLista (list "A" "B" "C" "D" "E" "F" "G") 1 3)
+;Ejemplo: (recortaLista elements 1 3)
 (define recortaLista (lambda (lista numCont numRecorte)
-                       (if (< numCont (+ numRecorte 1))
+                       (if (and (< numCont (+ numRecorte 1)) (not (null? lista)))
                            (recortaLista (cdr lista) (+ numCont 1) numRecorte)
                            lista)))
 
-;Ejemplo: (obtenerDato (list "A" "B" "C" "D" "E" "F" "G") 1 3)
+;Ejemplo: (obtenerDato elements 1 3)
 (define obtenerDato (lambda (lista numCont numRecorte)
-                       (if (< numCont numRecorte)
+                       (if (and (< numCont numRecorte) (not (null? lista)))
                            (obtenerDato (cdr lista) (+ numCont 1) numRecorte)
-                           lista)))
+                           (if (null? lista)
+                               (list "A")
+                               (car lista))
+                           )))
 
-;Ejemplo: (for1 (list "A" "B" "C" "D" "E" "F" "G") 3 1 null)
+;Ejemplo: (for1 elements 3 1 null)
 (define for1 (lambda (elements nElementCards nCont card)
                        (if (or (< nCont (+ nElementCards 1)) (= nCont (+ nElementCards 1)))
                            (for1 (cdr elements) nElementCards (+ nCont 1) (cons (car elements) card))
                            (reverse card)
                            )))
 
-;Ejemplo: (for3 (list "A" "B" "C" "D" "E" "F" "G") 3 1 null)
+;Ejemplo: (for3 elements 3 1 1 null)
 (define for3 (lambda (elements nElementCards nContJ nContW card)
-                       (if (or (< nContW (+ nElementCards 1)) (= nContW (+ nElementCards 1)))
-                           (for3 (recortaLista elements 1 (+ (* nElementCards nContJ) (+ nContW 1))) nElementCards nContJ (+ nContW 1) (cons (obtenerDato elements 1 (+ (* nElementCards nContJ) (+ nContW 1))) card))
+                       (if (< nContW (+ nElementCards 1))
+                           (for3 elements nElementCards nContJ (+ nContW 1) (cons (obtenerDato elements 1 (+ (* nElementCards nContJ) (+ nContW 1))) card))
                            (reverse card)
                            )))
 
-;Ejemplo: (for2 (list "A" "B" "C" "D" "E" "F" "G") 3 1 null)
-(define for2 (lambda (elements nElementCards nCont card)
-                       (cond ((or (< nCont (+ nElementCards 1)) (= nCont (+ nElementCards 1)))
-                              (cons 1 card)
-                              (for3 elements nElementCards nCont 1 card))
-                       (else card))))
-                              
+;Ejemplo: (for2 elements 3 1 null null)
+(define for2 (lambda (elements nElementCards nCont card cards)
+                       (if (< nCont (+ nElementCards 1))
+                             (for2 elements nElementCards (+ nCont 1) card (cons (for3 elements nElementCards nCont 1 (cons (car elements) card)) cards))
+                             (reverse cards)
+                       )))
 
 ;;TDA cardsSet - Constructor
 ;;Descripción: Función constructora de conjuntos válidos de cartas para el juego Dobble.
