@@ -55,11 +55,48 @@
                              (reverse cards)
                        )))
 
+
+;Ejemplo: (for4 elements 3 1 null null)
+(define for4 (lambda (elements nElementCards nCont card cards)
+                       (if (< nCont (+ nElementCards 1))
+                             (for4 elements nElementCards (+ nCont 1) card (reverse (for5 elements nElementCards nCont 1 card cards)))
+                             (reverse cards)
+                       )))
+
+;Ejemplo: (for5 elements 3 1 1 null null)
+(define for5 (lambda (elements nElementCards nContI nContJ card cards)
+                       (if (< nContJ (+ nElementCards 1))
+                             (for5 elements nElementCards nContI (+ nContJ 1) card (cons (for6 elements nElementCards nContI nContJ 1 (cons (obtenerDato elements 1 (+ 1 nContI)) card)) cards))
+                             (reverse cards)
+                       )))
+
+;Ejemplo: (for6 elements 3 1 1 1 null)
+(define for6 (lambda (elements nElementCards nContI nContJ nContW card)
+                       (if (< nContW (+ nElementCards 1))
+                           (for6 elements nElementCards nContI nContJ (+ nContW 1) (cons (obtenerDato elements 1 (+ (+ nElementCards 2) (* nElementCards (- nContW 1)) (modulo (+ (* (- nContI 1) (- nContW 1)) (- nContJ 1)) nElementCards))) card))
+                           (reverse card)
+                           )))
+
+;Ejemplo: (creaConjunto elements 3 1 null null)
+(define creaConjunto (lambda (elements nElementCards nCont card cards)
+             (append (cons (for1 elements nElementCards nCont card) (for2 elements nElementCards nCont card cards)) (for4 elements nElementCards nCont card cards))
+             ))
+
+;Ejemplo: (limitaCartas elements 3 1 null null)
+(define limitaCartas (lambda (cards newCards nCont limit)
+                       (if (< limit 1)
+                           cards
+                           (if (> nCont limit)
+                                  (reverse newCards)
+                                  (limitaCartas (cdr cards) (cons (car cards) newCards) (+ nCont 1) limit)))
+                           ))
+  
 ;;TDA cardsSet - Constructor
 ;;Descripción: Función constructora de conjuntos válidos de cartas para el juego Dobble.
 ;;Dom: elements (list) X numE (int) X maxC (int) X mdFn
 ;;Rec: lista de cartas con conjuntos válidos
-;;Ejemplo: (cardsSet (list "A" "B" "C" "D" "E" "F" "G") 3 5 modFn)
-;(define cardsSet (lambda (elements numE maxC mdFn)
-                   
+;;Ejemplo: (cardsSet elements 3 5 null)
+;;Ejemplo: (cardsSet elements 3 -1 null)
+(define cardsSet (lambda (elements numE maxC mdFN)
+                  (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC)))
                    
