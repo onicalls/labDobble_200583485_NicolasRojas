@@ -147,28 +147,45 @@
 
 ;;TDA cardsSet - nthCard
 ;;Descripción: Función que obtiene la n-ésima (nth) carta desde el conjunto de cartas partiendo desde 0 hasta (totalCartas-1).
-;;Dom: Mazo de Cartas (cardsSet) X Número de Carta (int
+;;Dom: Mazo de Cartas (cardsSet) X Número de Carta (int)
 ;;Rec: carta (card)
-;;Ejemplo: (numCards (cardsSet elements 3 5 null))
+;;Ejemplo: (nthCard (cardsSet elements 3 5 null) 0)
 (define nthCard (lambda (cards int)
                 (list-ref cards int)))
 
 ;;TDA cardsSet - findTotalCards
 ;;Descripción: Función que a partir de una carta de muestra, determina la cantidad total de cartas que se deben producir para construir un conjunto válido.
-;;Dom: Mazo de Cartas (cardsSet) X Carta de Muestra (int
-;;Rec: carta (card)
-;;Ejemplo: (numCards (cardsSet elements 3 5 null))
+;;Dom: carta (card)
+;;Rec: cantidad de cartas (int)
+;;Ejemplo: (findTotalCards (nthCard (cardsSet elements 3 5 null) 0))
 (define findTotalCards (lambda (card)
-                (+ (* (- (numCards card) 1) (- (numCards card) 1)) (+ 1 (- (numCards card) 1)))))
+                (+ (* (- (numCards card) 1) (- (numCards card) 1)) (numCards card))))
 
+;;TDA cardsSet - requiredElements
+;;Descripción: Función que a partir de una carta de muestra, determina la cantidad total de elementos necesarios para poder construir un conjunto válido.
+;;Dom: carta (card)
+;;Rec: cantidad de elementos restantes (int)
+;;Ejemplo: (requiredElements (nthCard (cardsSet elements 3 5 null) 0))
+(define requiredElements (lambda (card)
+                (+ (* (- (numCards card) 1) (- (numCards card) 1)) (numCards card))))
 
+;;TDA cardsSet - missingCards
+;;Descripción: Función que a partir de un conjunto de cartas retorna el conjunto de cartas que hacen falta para que el set sea válido.
+;;Dom: mazo de cartas (cards)
+;;Rec: cartas faltantes del mazo (cards)
+;;Ejemplo: (missingCards (cardsSet elements 3 5 null))
+(define missingCards (lambda (cards)
+                (if (= (numCards cards) (requiredElements (nthCard cards 0)))
+                    cards
+                    (append cards(cardsSet (build-list (* (requiredElements (nthCard cards 0)) 2) values) (numCards (nthCard cards 0)) (- (requiredElements (nthCard cards 0)) (numCards cards)) null)))))
 
+                    
 ;función de ejemplo para la selección aleatoria de elementos desde un conjunto, asignación aleatoria de cartas a ;jugadores, ordenamiento aleatorio de cartas en la pila, etc. Esta función garantiza transparencia referencial. Puede crear su propia función o usar esta.
 ;conjunto de elementos/símbolos con los que se podrían generar ls cartas. Esta lista es solo un ejemplo. En la práctica podría albergar cualquier ;tipo de elemento y de cualquier tipo de dato.
 (define elementsSet (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "V" "W" "X" "Y" "Z"))
 
 ;cantidad de jugadores de la partida
-(define numPlayers 4)
+(define numPlayers 3)
 
 ;cantidad de elementos requeridos para cada carta
 (define numElementsPerCard 3)
