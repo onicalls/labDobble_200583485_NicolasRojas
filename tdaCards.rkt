@@ -1,5 +1,7 @@
 #lang racket
 
+(provide (all-defined-out))
+
 ;función de ejemplo para la selección aleatoria de elementos desde un conjunto, asignación aleatoria de cartas a ;jugadores, ordenamiento aleatorio de cartas en la pila, etc. Esta función garantiza transparencia referencial. Puede crear su propia función o usar esta.
 (define m 2147483647)
 (define a 1103515245)
@@ -179,7 +181,15 @@
                     cards
                     (append cards(cardsSet (build-list (* (requiredElements (nthCard cards 0)) 2) values) (numCards (nthCard cards 0)) (- (requiredElements (nthCard cards 0)) (numCards cards)) null)))))
 
-                    
+
+;;TDA cardsSet - cardsSet->string
+;;Descripción: Función que convierte un conjunto de cartas a una representación basada en strings que posteriormente pueda visualizarse a través de la función display.
+;;Dom: mazo de cartas (cards)
+;;Rec: cartas del mazo (str)
+;;Ejemplo: (cardsSet->string (cardsSet elements 3 5 null))
+;(define cardsSet->string (lambda (cards)))
+                           
+
 ;función de ejemplo para la selección aleatoria de elementos desde un conjunto, asignación aleatoria de cartas a ;jugadores, ordenamiento aleatorio de cartas en la pila, etc. Esta función garantiza transparencia referencial. Puede crear su propia función o usar esta.
 ;conjunto de elementos/símbolos con los que se podrían generar ls cartas. Esta lista es solo un ejemplo. En la práctica podría albergar cualquier ;tipo de elemento y de cualquier tipo de dato.
 (define elementsSet (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "V" "W" "X" "Y" "Z"))
