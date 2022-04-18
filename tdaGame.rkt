@@ -9,7 +9,10 @@
 ;;Ejemplo: (game 4 (cardsSet elements 3 5 null) null null)
 ;;(define game1 (game numPlayers dobbleSet0 null null))
 (define game (lambda (nPlayers cardsSet mode rndFn)
-               (list mode null (make-list nPlayers "") cardsSet null "")))
+               (if (eq? mode stackMode)
+                   (list (mode cardsSet) null (make-list nPlayers "") cardsSet null "" null)
+                   null
+                   )))
 
 ;getAreaJuego
 (define getAreaJuego (lambda (game)
@@ -36,6 +39,9 @@
 ;getTurno
 (define getTurno (lambda (game)
                        (cadr (cddddr game))))
+;getPuntuacion
+(define getPuntuacion (lambda (game)
+                       (caddr (cddddr game))))
 
 ;;TDA game - stackMode
 ;;Descripción: Función que permite retirar y voltear las dos cartas superiores del stack de cartas en el juego y las dispone en el área de juego.
@@ -50,8 +56,6 @@
                             cardsSet
                             (append (list (car cardsSet) (cadr cardsSet)))))))
 
-
-
 ;;TDA game - register
 ;;Descripción: TDA que contiene los elementos de la partida
 ;;Dom: lista de jugadores (list) X set de cartas (list) X jugada (list) X turno (int) X estado del juego (int)
@@ -65,7 +69,7 @@
                                                (if (eq? (car players) "")
                                                    (cons user (cdr players))
                                                    (cons (car players) (register-cola name (cdr players)))))))
-                   (list (getAreaJuego game) (getCartasJugadores game) (register-cola user (getPlayers game)) (getCartasDisponibles game) (getEstadoJuego game) (getTurno game))))
+                   (list (getAreaJuego game) (getCartasJugadores game) (register-cola user (getPlayers game)) (getCartasDisponibles game) (getEstadoJuego game) (getTurno game) (getPuntuacion game))))
 
 ;;TDA game - whoseTurnIsIt?
 ;;Descripción: Función que retorna el usuario a quién le corresponde jugar en el turno.
@@ -78,18 +82,9 @@
                              (car (caddr game))
                              (cadr (cddddr game)))))
 
-;;TDA game - play
-;;Descripción: función que permite realizar una jugada a partir de la acción especificadas por la función currificada action.
-;;Dom: argumentos del juego (game) X action (fn)
-;;Rec: argumentos del juego (game)
-;;Ejemplo: (register "juan" (game 4 (cardsSet elements 3 5 null) null null))
-;;(define game1 (game numPlayers dobbleSet0 null null))
-(define play (lambda (game action)
-                         (if (eq? (cadr (cddddr game)) "")
-                             (car (caddr game))
-                             (cadr (cddddr game)))))
 
-(define game0 (game 2 dobbleSet0 (stackMode dobbleSet0) null))
+
+(define game0 (game 2 dobbleSet0 stackMode null))
 (define game1 (register "juan" game0))
 (define game2 (register "pato" game1))
 (whoseTurnIsIt? game2)

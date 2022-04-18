@@ -12,21 +12,21 @@
                  )
 )
 
-;;TDA cards
-;;Descripción: TDA que contiene los elementos de las cartas
-;;Dom: cartas (list) X jugador (str) 
-;;Rec: lista de cartas de un jugador (list)
-;;Ejemplo: (tdaCards (list (list "A" "B" "C") (list "A" "C" "E")) "juan")
-(define tdaCards (lambda (cards player)
-          (list cards player)))
-
-;Ejemplo: (recortaLista elements 1 3)
+;Función que recorta una lista.
+;Dominio: lista de elementos (list) X posI (int) X posF (int)
+;Recorrido: lista recortada (list)
+;Tipo de recursión: natural
+;Ejemplo: (recortaLista elementsSet 1 3)
 (define recortaLista (lambda (lista numCont numRecorte)
                        (if (and (< numCont (+ numRecorte 1)) (not (null? lista)))
                            (recortaLista (cdr lista) (+ numCont 1) numRecorte)
                            lista)))
 
-;Ejemplo: (obtenerDato elements 1 3 elements)
+;Función que obtiene un dato de una lista.
+;Dominio: lista de elementos (list) X posI (int) X posF (int) X lista auxiliar (list)
+;Recorrido: lista recortada (list)
+;Tipo de recursión: natural
+;Ejemplo: (obtenerDato elementsSet 1 3 elementsSet)
 (define obtenerDato (lambda (lista numCont numRecorte aux)
                        (if (and (< numCont numRecorte) (not (null? lista)))
                            (obtenerDato (cdr lista) (+ numCont 1) numRecorte aux)
@@ -35,55 +35,50 @@
                                (car lista))
                            )))
 
-;Ejemplo: (for1 elements 3 1 null)
-(define for1 (lambda (elements nElementCards nCont card)
-                       (if (or (< nCont nElementCards) (= nCont nElementCards))
-                           (for1 (cdr elements) nElementCards (+ nCont 1) (cons (car elements) card))
-                           (reverse card)
-                           )))
-
-;Ejemplo: (for3 elements 3 1 1 null)
-(define for3 (lambda (elements nElementCards nContJ nContW card)
-                       (if (< nContW nElementCards)
-                           (for3 elements nElementCards nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContJ 1) (+ (* nElementCards nContJ) (+ nContW 1)) elements) card))
-                           (reverse card)
-                           )))
-
-;Ejemplo: (for2 elements 3 1 null null)
-(define for2 (lambda (elements nElementCards nCont card cards)
-                       (if (< nCont nElementCards)
-                             (for2 elements nElementCards (+ nCont 1) card (cons (for3 elements nElementCards nCont 1 (cons (car elements) card)) cards))
-                             (reverse cards)
-                       )))
-
-
-;Ejemplo: (for4 elements 3 1 null null)
-(define for4 (lambda (elements nElementCards nCont card cards)
-                       (if (< nCont nElementCards)
-                             (for4 elements nElementCards (+ nCont 1) card (reverse (for5 elements nElementCards nCont 1 card cards)))
-                             (reverse cards)
-                       )))
-
-;Ejemplo: (for5 elements 3 1 1 null null)
-(define for5 (lambda (elements nElementCards nContI nContJ card cards)
-                       (if (< nContJ nElementCards)
-                             (for5 elements nElementCards nContI (+ nContJ 1) card (cons (for6 elements nElementCards nContI nContJ 1 (cons (obtenerDato elements 1 (+ 1 nContI) elements) card)) cards))
-                             (reverse cards)
-                       )))
-
-;Ejemplo: (for6 elements 3 1 1 1 null)
-(define for6 (lambda (elements nElementCards nContI nContJ nContW card)
-                       (if (< nContW nElementCards)
-                           (for6 elements nElementCards nContI nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContW 1) (+ (+ nElementCards 2) (* nElementCards (- nContW 1)) (modulo (+ (* (- nContI 1) (- nContW 1)) (- nContJ 1)) (- nElementCards 1))) elements) card))
-                           (reverse card)
-                           )))
-
-;Ejemplo: (creaConjunto elements 3 1 null null)
+;Función que crea un conjunto de cartar a partir del algoritmo de Dobble.
+;Dominio: lista de elementos (list) X cantidad de elementos (int) X contador (int) X lista carta (list) X lista cartas (list)
+;Recorrido: lista de cartas generadas (list)
+;Tipo de recursión: natural
+;Ejemplo: (creaConjunto elementsSet 3 1 null null)
 (define creaConjunto (lambda (elements nElementCards nCont card cards)
-             (append (cons (for1 elements nElementCards nCont card) (for2 elements nElementCards nCont card cards)) (for4 elements nElementCards nCont card cards))
-             ))
+                       (define for1 (lambda (elements nElementCards nCont card)
+                                      (if (or (< nCont nElementCards) (= nCont nElementCards))
+                                          (for1 (cdr elements) nElementCards (+ nCont 1) (cons (car elements) card))
+                                          (reverse card)
+                                          )))
+                       (define for2 (lambda (elements nElementCards nCont card cards)
+                                      (define for3 (lambda (elements nElementCards nContJ nContW card)
+                                                     (if (< nContW nElementCards)
+                                                         (for3 elements nElementCards nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContJ 1) (+ (* nElementCards nContJ) (+ nContW 1)) elements) card))
+                                                         (reverse card)
+                                                         )))
+                                      (if (< nCont nElementCards)
+                                          (for2 elements nElementCards (+ nCont 1) card (cons (for3 elements nElementCards nCont 1 (cons (car elements) card)) cards))
+                                          (reverse cards)
+                                          )))
+                       (define for4 (lambda (elements nElementCards nCont card cards)
+                                      (define for5 (lambda (elements nElementCards nContI nContJ card cards)
+                                                     (define for6 (lambda (elements nElementCards nContI nContJ nContW card)
+                                                                    (if (< nContW nElementCards)
+                                                                        (for6 elements nElementCards nContI nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContW 1) (+ (+ nElementCards 2) (* nElementCards (- nContW 1)) (modulo (+ (* (- nContI 1) (- nContW 1)) (- nContJ 1)) (- nElementCards 1))) elements) card))
+                                                                        (reverse card)
+                                                                        )))
+                                                     (if (< nContJ nElementCards)
+                                                         (for5 elements nElementCards nContI (+ nContJ 1) card (cons (for6 elements nElementCards nContI nContJ 1 (cons (obtenerDato elements 1 (+ 1 nContI) elements) card)) cards))
+                                                         (reverse cards)
+                                                         )))
+                                      (if (< nCont nElementCards)
+                                          (for4 elements nElementCards (+ nCont 1) card (reverse (for5 elements nElementCards nCont 1 card cards)))
+                                          (reverse cards)
+                                          )))
+                       (append (cons (for1 elements nElementCards nCont card) (for2 elements nElementCards nCont card cards)) (for4 elements nElementCards nCont card cards))
+                       ))
 
-;Ejemplo: (limitaCartas elements 3 1 null null)
+;Función que limita la cantidad de cartas que debe tener un conjunto
+;Dominio: lista de cartas (list) X nueva lista de cartas (list) X contador (int) X número de límite (int)
+;Recorrido: lista de cartas limitadas (list)
+;Tipo de recursión: natural
+;Ejemplo: (creaConjunto elementsSet 3 1 null null)
 (define limitaCartas (lambda (cards newCards nCont limit)
                        (if (< limit 1)
                            cards
@@ -118,11 +113,11 @@
 ;;Ejemplo: (cardsSet elements 3 5 null)
 ;;Ejemplo: (cardsSet elements 3 -1 null)
 (define cardsSet (lambda (elements numE maxC mdFn)
-                  (define makeShuffle (lambda (cards veces resultado)
-                    (if (eq? veces 0)
-                        resultado
-                        (makeShuffle cards (- veces 1) (shuffle cards)))))
-                   (makeShuffle (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC) (modulo mdFn numE) null)))
+                   (define makeShuffle (lambda (cards veces resultado)
+                                         (if (eq? veces 0)
+                                             resultado
+                                             (makeShuffle cards (- veces 1) (shuffle cards)))))
+                   (makeShuffle (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC) (modulo (mdFn numE) numE) null)))
                    ;(limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC)))
 
 
@@ -172,17 +167,18 @@
 ;;Ejemplo: (requiredElements (nthCard (cardsSet elements 3 5 null) 0))
 (define requiredElements (lambda (card)
                 (+ (* (- (numCards card) 1) (- (numCards card) 1)) (numCards card))))
-
+                                                                   
 ;;TDA cardsSet - missingCards
 ;;Descripción: Función que a partir de un conjunto de cartas retorna el conjunto de cartas que hacen falta para que el set sea válido.
 ;;Dom: mazo de cartas (cards)
 ;;Rec: cartas faltantes del mazo (cards)
 ;;Ejemplo: (missingCards (cardsSet elements 3 5 null))
 (define missingCards (lambda (cards)
-                (if (= (numCards cards) (requiredElements (nthCard cards 0)))
-                    cards
-                    (append cards(cardsSet (build-list (* (requiredElements (nthCard cards 0)) 2) values) (numCards (nthCard cards 0)) (- (requiredElements (nthCard cards 0)) (numCards cards)) null)))))
-
+                       (define missingCola (lambda (cards elements aux)
+                                             (if (and (= (numCards aux) (requiredElements (nthCard cards 0))) (dobble? aux))
+                                                 aux
+                                                 (missingCola cards (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z") (append cards (cardsSet (recortaLista elements (numCards cards) (findTotalCards (nthCard cards 0))) (numCards (nthCard cards 0)) (- (requiredElements (nthCard cards 0)) (numCards cards)) randomFn))))))                         
+                       (missingCola cards (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z") cards)))
 
 ;;TDA cardsSet - cardsSet->string
 ;;Descripción: Función que convierte un conjunto de cartas a una representación basada en strings que posteriormente pueda visualizarse a través de la función display.
@@ -213,10 +209,10 @@
 (define numElementsPerCard 4)
 
 ;máxima cantidad de cartas a generar
-(define maxCards 0)  ;para generar la cantidad necesaria de cartas para un set válido
+(define maxCards 4)  ;para generar la cantidad necesaria de cartas para un set válido
 
 ;se genera un conjunto de cartas incompleto
-(define dobbleSet0 (cardsSet elementsSet numElementsPerCard maxCards (randomFn numElementsPerCard)))
+(define dobbleSet0 (cardsSet elementsSet numElementsPerCard maxCards randomFn))
 
 ;se consulta si el set generado es un set válido del juego dobble
 (dobble? dobbleSet0)
@@ -228,4 +224,6 @@
 (findTotalCards (nthCard dobbleSet0 1))
 ;para los valores anteriores el resultado debería ser 7 
 
-(cardsSet->string dobbleSet0)
+(define missing (missingCards dobbleSet0))
+missing
+(dobble? missing)
