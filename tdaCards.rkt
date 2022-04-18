@@ -12,9 +12,6 @@
                  )
 )
 
-(define elements (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "V" "W" "X" "Y" "Z"))
-(define nelements (list 1 2 3 4 5 6 7 8 9))
-
 ;;TDA cards
 ;;Descripción: TDA que contiene los elementos de las cartas
 ;;Dom: cartas (list) X jugador (str) 
@@ -48,7 +45,7 @@
 ;Ejemplo: (for3 elements 3 1 1 null)
 (define for3 (lambda (elements nElementCards nContJ nContW card)
                        (if (< nContW nElementCards)
-                           (for3 elements nElementCards nContJ (+ nContW 1) (cons (obtenerDato elements 1 (+ (* nElementCards nContJ) (+ nContW 1)) elements) card))
+                           (for3 elements nElementCards nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContJ 1) (+ (* nElementCards nContJ) (+ nContW 1)) elements) card))
                            (reverse card)
                            )))
 
@@ -74,10 +71,10 @@
                              (reverse cards)
                        )))
 
-;Ejemplo: (for6 elements 3 1 1 1 null)
+;Ejemplo: (for6 elements 3 1 1 0 null)
 (define for6 (lambda (elements nElementCards nContI nContJ nContW card)
                        (if (< nContW nElementCards)
-                           (for6 elements nElementCards nContI nContJ (+ nContW 1) (cons (obtenerDato elements 1 (+ (+ nElementCards 2) (* nElementCards (- nContW 1)) (modulo (+ (* (- nContI 1) (- nContW 1)) (- nContJ 1)) nElementCards)) elements) card))
+                           (for6 elements nElementCards nContI nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContW 1) (+ (+ nElementCards 2) (* nElementCards (- nContW 1)) (modulo (+ (* (- nContI 1) (- nContW 1)) (- nContJ 1)) nElementCards)) elements) card))
                            (reverse card)
                            )))
 
@@ -112,16 +109,21 @@
                                 (comparaCartas (cdr card) card2 (cons -1 acum) nAcum)
                                 (comparaCartas (cdr card) card2 (cons (+ nAcum 1) acum) (+ nAcum 1)))
                             )))
-                        
-                            
+                       
+
 ;;TDA cardsSet - Constructor
 ;;Descripción: Función constructora de conjuntos válidos de cartas para el juego Dobble.
 ;;Dom: elements (list) X numE (int) X maxC (int) X mdFn
 ;;Rec: lista de cartas con conjuntos válidos
 ;;Ejemplo: (cardsSet elements 3 5 null)
 ;;Ejemplo: (cardsSet elements 3 -1 null)
-(define cardsSet (lambda (elements numE maxC mdFN)
-                  (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC)))
+(define cardsSet (lambda (elements numE maxC mdFn)
+                  (define makeShuffle (lambda (cards veces resultado)
+                    (if (eq? veces 0)
+                        resultado
+                        (makeShuffle cards (- veces 1) (shuffle cards)))))
+                    ;(makeShuffle (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC) (modulo mdFn numE) null)))
+                   (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC)))
 
 
 ;;TDA cardsSet - dobble?
@@ -187,24 +189,34 @@
 ;;Dom: mazo de cartas (cards)
 ;;Rec: cartas del mazo (str)
 ;;Ejemplo: (cardsSet->string (cardsSet elements 3 5 null))
-;(define cardsSet->string (lambda (cards)))
-                           
+;(cardsSet->string dobbleSet0)
+(define cardsSet->string (lambda (cards)
+                           (define cardsStringCola (lambda (cards contador lista)
+                                                     (if (null? cards)
+                                                         lista
+                                                         (cardsStringCola (cdr cards) (+ contador 1) (cons (string-append "Carta " (number->string contador) ": " (string-join (car cards) " ") "\n") lista)))))
+                           (define displayCards (lambda (card cards)
+                                                  (if (null? cards)
+                                                      (display card)
+                                                      (displayCards (cdr cards) (car cards)))))
+                           (displayCards (reverse (cardsStringCola cards 1 null)) null)))
+                               
 
 ;función de ejemplo para la selección aleatoria de elementos desde un conjunto, asignación aleatoria de cartas a ;jugadores, ordenamiento aleatorio de cartas en la pila, etc. Esta función garantiza transparencia referencial. Puede crear su propia función o usar esta.
 ;conjunto de elementos/símbolos con los que se podrían generar ls cartas. Esta lista es solo un ejemplo. En la práctica podría albergar cualquier ;tipo de elemento y de cualquier tipo de dato.
-(define elementsSet (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "V" "W" "X" "Y" "Z"))
+(define elementsSet (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z"))
 
 ;cantidad de jugadores de la partida
-(define numPlayers 3)
+(define numPlayers 2)
 
 ;cantidad de elementos requeridos para cada carta
-(define numElementsPerCard 3)
+(define numElementsPerCard 4)
 
 ;máxima cantidad de cartas a generar
-(define maxCards 5)  ;para generar la cantidad necesaria de cartas para un set válido
+(define maxCards 0)  ;para generar la cantidad necesaria de cartas para un set válido
 
 ;se genera un conjunto de cartas incompleto
-(define dobbleSet0 (cardsSet elementsSet numElementsPerCard maxCards randomFn))
+(define dobbleSet0 (cardsSet elementsSet numElementsPerCard maxCards null))
 
 ;se consulta si el set generado es un set válido del juego dobble
 (dobble? dobbleSet0)
@@ -215,3 +227,5 @@
 ;retorna la máxima cantidad de cartas que se podrían generar a partir de la información recogida de una carta
 (findTotalCards (nthCard dobbleSet0 1))
 ;para los valores anteriores el resultado debería ser 7 
+
+(cardsSet->string dobbleSet0)
