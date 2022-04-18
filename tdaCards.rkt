@@ -71,10 +71,10 @@
                              (reverse cards)
                        )))
 
-;Ejemplo: (for6 elements 3 1 1 0 null)
+;Ejemplo: (for6 elements 3 1 1 1 null)
 (define for6 (lambda (elements nElementCards nContI nContJ nContW card)
                        (if (< nContW nElementCards)
-                           (for6 elements nElementCards nContI nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContW 1) (+ (+ nElementCards 2) (* nElementCards (- nContW 1)) (modulo (+ (* (- nContI 1) (- nContW 1)) (- nContJ 1)) nElementCards)) elements) card))
+                           (for6 elements nElementCards nContI nContJ (+ nContW 1) (cons (obtenerDato elements (+ nContW 1) (+ (+ nElementCards 2) (* nElementCards (- nContW 1)) (modulo (+ (* (- nContI 1) (- nContW 1)) (- nContJ 1)) (- nElementCards 1))) elements) card))
                            (reverse card)
                            )))
 
@@ -122,8 +122,8 @@
                     (if (eq? veces 0)
                         resultado
                         (makeShuffle cards (- veces 1) (shuffle cards)))))
-                    ;(makeShuffle (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC) (modulo mdFn numE) null)))
-                   (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC)))
+                   (makeShuffle (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC) (modulo mdFn numE) null)))
+                   ;(limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC)))
 
 
 ;;TDA cardsSet - dobble?
@@ -216,7 +216,7 @@
 (define maxCards 0)  ;para generar la cantidad necesaria de cartas para un set válido
 
 ;se genera un conjunto de cartas incompleto
-(define dobbleSet0 (cardsSet elementsSet numElementsPerCard maxCards null))
+(define dobbleSet0 (cardsSet elementsSet numElementsPerCard maxCards (randomFn numElementsPerCard)))
 
 ;se consulta si el set generado es un set válido del juego dobble
 (dobble? dobbleSet0)
