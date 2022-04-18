@@ -1,5 +1,4 @@
 #lang racket
-
 (provide (all-defined-out))
 
 ;función de ejemplo para la selección aleatoria de elementos desde un conjunto, asignación aleatoria de cartas a ;jugadores, ordenamiento aleatorio de cartas en la pila, etc. Esta función garantiza transparencia referencial. Puede crear su propia función o usar esta.
@@ -93,137 +92,23 @@
                                 #t
                                 (if (memq (car card) (cdr card))
                                     #f
-                                    (validaDiferencias (cdr card))
-                                    ))))
+                                    (validaDiferencias (cdr card))))))
+
+;Ejemplo: (validaElementoIgual (list -1 2 3))
+(define validaElementoIgual (lambda (card)
+                              (if (null? card)
+                                  #f
+                                  (if (eq? (car card) -1)
+                                      #t
+                                      (validaElementoIgual (cdr card))))))
 
 ;Ejemplo: (comparaCartas (list 1 2 3) (list 1 4 5) null 0)
 (define comparaCartas (lambda (card card2 acum nAcum)
                         (if (null? card)
-                            (validaDiferencias (reverse acum))
+                            (and (validaElementoIgual (reverse acum)) (validaDiferencias (reverse acum)))
                             (if (memq (car card) card2)
                                 (comparaCartas (cdr card) card2 (cons -1 acum) nAcum)
                                 (comparaCartas (cdr card) card2 (cons (+ nAcum 1) acum) (+ nAcum 1)))
                             )))
-                       
 
-;;TDA cardsSet - Constructor
-;;Descripción: Función constructora de conjuntos válidos de cartas para el juego Dobble.
-;;Dom: elements (list) X numE (int) X maxC (int) X mdFn
-;;Rec: lista de cartas con conjuntos válidos
-;;Ejemplo: (cardsSet elements 3 5 null)
-;;Ejemplo: (cardsSet elements 3 -1 null)
-(define cardsSet (lambda (elements numE maxC mdFn)
-                   (define makeShuffle (lambda (cards veces resultado)
-                                         (if (eq? veces 0)
-                                             resultado
-                                             (makeShuffle cards (- veces 1) (shuffle cards)))))
-                   (makeShuffle (limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC) (modulo (mdFn numE) numE) null)))
-                   ;(limitaCartas (creaConjunto elements numE 1 null null) null 1 maxC)))
-
-
-;;TDA cardsSet - dobble?
-;;Descripción: Función que permite verificar si el conjunto de cartas en el conjunto corresponden a un conjunto válido.
-;;Dom: cards (list) 
-;;Rec: true or false (boolean)
-;;Ejemplo: (dobble? (cardsSet elements 3 5 null))
-(define dobble? (lambda (cards)
-                (if (null? (cdr cards))
-                   #t
-                  (if (validaDiferencias (car cards))
-                      (if (comparaCartas (car cards) (car (cdr cards)) null 0)
-                          (dobble? (cdr cards))
-                          #f)
-                      #f)
-                  )))
-
-;;TDA cardsSet - numCards
-;;Descripción: Función que permite determinar la cantidad de cartas en el set.
-;;Dom: Mazo de Cartas (cardsSet) 
-;;Rec: Número de cartas que hay en el mazo (int)
-;;Ejemplo: (numCards (cardsSet elements 3 5 null))
-(define numCards (lambda (cards)
-                (length cards)))
-
-;;TDA cardsSet - nthCard
-;;Descripción: Función que obtiene la n-ésima (nth) carta desde el conjunto de cartas partiendo desde 0 hasta (totalCartas-1).
-;;Dom: Mazo de Cartas (cardsSet) X Número de Carta (int)
-;;Rec: carta (card)
-;;Ejemplo: (nthCard (cardsSet elements 3 5 null) 0)
-(define nthCard (lambda (cards int)
-                (list-ref cards int)))
-
-;;TDA cardsSet - findTotalCards
-;;Descripción: Función que a partir de una carta de muestra, determina la cantidad total de cartas que se deben producir para construir un conjunto válido.
-;;Dom: carta (card)
-;;Rec: cantidad de cartas (int)
-;;Ejemplo: (findTotalCards (nthCard (cardsSet elements 3 5 null) 0))
-(define findTotalCards (lambda (card)
-                (+ (* (- (numCards card) 1) (- (numCards card) 1)) (numCards card))))
-
-;;TDA cardsSet - requiredElements
-;;Descripción: Función que a partir de una carta de muestra, determina la cantidad total de elementos necesarios para poder construir un conjunto válido.
-;;Dom: carta (card)
-;;Rec: cantidad de elementos restantes (int)
-;;Ejemplo: (requiredElements (nthCard (cardsSet elements 3 5 null) 0))
-(define requiredElements (lambda (card)
-                (+ (* (- (numCards card) 1) (- (numCards card) 1)) (numCards card))))
-                                                                   
-;;TDA cardsSet - missingCards
-;;Descripción: Función que a partir de un conjunto de cartas retorna el conjunto de cartas que hacen falta para que el set sea válido.
-;;Dom: mazo de cartas (cards)
-;;Rec: cartas faltantes del mazo (cards)
-;;Ejemplo: (missingCards (cardsSet elements 3 5 null))
-(define missingCards (lambda (cards)
-                       (define missingCola (lambda (cards elements aux)
-                                             (if (and (= (numCards aux) (requiredElements (nthCard cards 0))) (dobble? aux))
-                                                 aux
-                                                 (missingCola cards (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z") (append cards (cardsSet (recortaLista elements (numCards cards) (findTotalCards (nthCard cards 0))) (numCards (nthCard cards 0)) (- (requiredElements (nthCard cards 0)) (numCards cards)) randomFn))))))                         
-                       (missingCola cards (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z") cards)))
-
-;;TDA cardsSet - cardsSet->string
-;;Descripción: Función que convierte un conjunto de cartas a una representación basada en strings que posteriormente pueda visualizarse a través de la función display.
-;;Dom: mazo de cartas (cards)
-;;Rec: cartas del mazo (str)
-;;Ejemplo: (cardsSet->string (cardsSet elements 3 5 null))
-;(cardsSet->string dobbleSet0)
-(define cardsSet->string (lambda (cards)
-                           (define cardsStringCola (lambda (cards contador lista)
-                                                     (if (null? cards)
-                                                         lista
-                                                         (cardsStringCola (cdr cards) (+ contador 1) (cons (string-append "Carta " (number->string contador) ": " (string-join (car cards) " ") "\n") lista)))))
-                           (define displayCards (lambda (card cards)
-                                                  (if (null? cards)
-                                                      (display card)
-                                                      (displayCards (cdr cards) (car cards)))))
-                           (displayCards (reverse (cardsStringCola cards 1 null)) null)))
-                               
-
-;función de ejemplo para la selección aleatoria de elementos desde un conjunto, asignación aleatoria de cartas a ;jugadores, ordenamiento aleatorio de cartas en la pila, etc. Esta función garantiza transparencia referencial. Puede crear su propia función o usar esta.
-;conjunto de elementos/símbolos con los que se podrían generar ls cartas. Esta lista es solo un ejemplo. En la práctica podría albergar cualquier ;tipo de elemento y de cualquier tipo de dato.
-(define elementsSet (list "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z"))
-
-;cantidad de jugadores de la partida
-(define numPlayers 2)
-
-;cantidad de elementos requeridos para cada carta
-(define numElementsPerCard 4)
-
-;máxima cantidad de cartas a generar
-(define maxCards 4)  ;para generar la cantidad necesaria de cartas para un set válido
-
-;se genera un conjunto de cartas incompleto
-(define dobbleSet0 (cardsSet elementsSet numElementsPerCard maxCards randomFn))
-
-;se consulta si el set generado es un set válido del juego dobble
-(dobble? dobbleSet0)
-
-;retorna la cantidad de cartas en el set
-(numCards dobbleSet0)
-
-;retorna la máxima cantidad de cartas que se podrían generar a partir de la información recogida de una carta
-(findTotalCards (nthCard dobbleSet0 1))
-;para los valores anteriores el resultado debería ser 7 
-
-(define missing (missingCards dobbleSet0))
-missing
-(dobble? missing)
+(provide (all-defined-out))
