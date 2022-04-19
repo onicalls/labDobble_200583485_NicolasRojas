@@ -1,6 +1,6 @@
 #lang racket
-(require "tdaCards_20058348_NicolasRojas.rkt")
-(require "tdaGame_20058348_NicolasRojas.rkt")
+(require "tdaCards_20058348_RojasGonzalez.rkt")
+(require "tdaGame_20058348_RojasGonzalez.rkt")
 
 ;;TDA cardsSet - Constructor
 ;;Descripción: Función constructora de conjuntos válidos de cartas para el juego Dobble.
