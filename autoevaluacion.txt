@@ -1,0 +1,12 @@
+cardsSet 1
+dobble? 1
+numCards 1
+nthCard 1
+findTotalCards 1
+requieredElements 1
+missingCards 0.75
+cardsSet->string 1
+game 1
+stackMode 1
+register 1
+whoseTurnIsIt? 1

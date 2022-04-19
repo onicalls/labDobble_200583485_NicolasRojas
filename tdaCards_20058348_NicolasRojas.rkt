@@ -1,16 +1,4 @@
 #lang racket
-(provide (all-defined-out))
-
-;función de ejemplo para la selección aleatoria de elementos desde un conjunto, asignación aleatoria de cartas a ;jugadores, ordenamiento aleatorio de cartas en la pila, etc. Esta función garantiza transparencia referencial. Puede crear su propia función o usar esta.
-(define m 2147483647)
-(define a 1103515245)
-(define c 12345)
-
-(define randomFn (lambda (xn)
-                   (modulo (+ (* a xn) c) m)
-                 )
-)
-
 ;Función que recorta una lista.
 ;Dominio: lista de elementos (list) X posI (int) X posF (int)
 ;Recorrido: lista recortada (list)
@@ -86,6 +74,10 @@
                                   (limitaCartas (cdr cards) (cons (car cards) newCards) (+ nCont 1) limit)))
                            ))
 
+;Función que valida que cada elemento de la carta sea diferente
+;Dominio: lista de carta (list)
+;Recorrido: true or false (booleano)
+;Tipo de recursión: natural
 ;Ejemplo: (validaDiferencias (list 1 2 3))
 (define validaDiferencias (lambda (card)
                             (if (null? card)
@@ -94,6 +86,10 @@
                                     #f
                                     (validaDiferencias (cdr card))))))
 
+;Función que valida que cada elemento tenga un elemento en común
+;Dominio: lista de carta (list)
+;Recorrido: true or false (booleano)
+;Tipo de recursión: natural
 ;Ejemplo: (validaElementoIgual (list -1 2 3))
 (define validaElementoIgual (lambda (card)
                               (if (null? card)
@@ -102,6 +98,10 @@
                                       #t
                                       (validaElementoIgual (cdr card))))))
 
+;Función que valida que cada elemento de la carta tenga al menos un elemento en común y no se repitan
+;Dominio: lista de carta (list) X lista de carta 2 (list) X lista acumuladora (list) X numero acumulador (int)
+;Recorrido: true or false (booleano)
+;Tipo de recursión: natural
 ;Ejemplo: (comparaCartas (list 1 2 3) (list 1 4 5) null 0)
 (define comparaCartas (lambda (card card2 acum nAcum)
                         (if (null? card)

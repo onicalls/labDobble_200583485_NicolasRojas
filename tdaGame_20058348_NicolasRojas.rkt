@@ -1,6 +1,4 @@
 #lang racket
-(provide (all-defined-out))
-
 ;getAreaJuego
 ;Descripción: Función que retorna una lista con el area de juego
 ;Dom: game (list)
