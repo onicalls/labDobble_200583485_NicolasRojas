@@ -1,13 +1,1 @@
-Instrucciones de uso:
-
-Primero, se debe verificar que estén los 3 archivos dentro de la misma carpeta, ya que,
-con la falta de uno, el archivo main no podrá funcionar. Una vez verificado lo anterior, se
-abre el archivo main con el compilador Dr. Racket y se presiona el botón “Run” que está
-en la parte superior derecha.
-Una vez ejecutado, el programa estará listo para recibir órdenes. Al final del código hay
-algunos ejemplos que puedes utilizar para comprobar la efectividad de cada uno de ellos.
-En el caso de querer probar el código utilizando funciones propias, asegura lo siguiente:
-1. Crea un elementsSet con al menos la cantidad de letras que tiene el abecedario inglés.
-2. Crea un numPlayers mayor o igual a 2.
-3. Se recomienda que numElementsPerCard sea un número primo.
-4. Se recomienda dejar maxCards en 0 si no sabe cuántas cartas quiere generar
+https://github.com/onicalls/labDobble_200583485_NicolasRojas
